@@ -1,0 +1,252 @@
+:root {
+  font-family: "Segoe UI", "Pretendard", sans-serif;
+  color: #f3f8ff;
+  background:
+    radial-gradient(circle at top left, rgba(49, 111, 255, 0.25), transparent 25%),
+    linear-gradient(180deg, #07111f 0%, #0c1829 45%, #111d2b 100%);
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.app-shell__nav {
+  padding: 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 13, 24, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.app-shell__nav nav {
+  display: grid;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.app-shell__nav a {
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.app-shell__nav a.active {
+  background: rgba(52, 134, 255, 0.18);
+  color: #fff;
+}
+
+.app-shell__content {
+  padding: 24px;
+}
+
+.topbar,
+.topbar__meta,
+.summary-grid,
+.page-grid,
+.page-split,
+.robot-grid,
+.mission-board,
+.stack-list {
+  display: grid;
+  gap: 16px;
+}
+
+.topbar {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.topbar__meta {
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #80b2ff;
+  font-size: 12px;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.summary-card,
+.panel,
+.data-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(13, 24, 39, 0.72);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.summary-card {
+  padding: 20px;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 32px;
+}
+
+.page-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page-grid > :first-child {
+  grid-column: 1 / -1;
+}
+
+.page-split {
+  grid-template-columns: 1.6fr 1fr;
+}
+
+.panel {
+  padding: 18px;
+}
+
+.panel__header h2,
+.app-shell__nav h1,
+.topbar h2 {
+  margin: 0;
+}
+
+.panel__header p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.robot-grid,
+.mission-board {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.data-card {
+  padding: 16px;
+}
+
+.data-card--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge--connected,
+.status-badge--running,
+.status-badge--ready {
+  background: rgba(0, 191, 120, 0.16);
+  color: #8ff1c1;
+}
+
+.status-badge--warning,
+.status-badge--waiting_path,
+.status-badge--major {
+  background: rgba(255, 181, 46, 0.18);
+  color: #ffd58d;
+}
+
+.status-badge--critical,
+.status-badge--error,
+.status-badge--fault {
+  background: rgba(255, 87, 87, 0.18);
+  color: #ffb3b3;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.map-cell {
+  min-height: 72px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.map-cell--blocked {
+  background: rgba(255, 87, 87, 0.14);
+}
+
+.spec-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.state-message {
+  padding: 24px;
+  border-radius: 18px;
+  background: rgba(13, 24, 39, 0.72);
+}
+
+code {
+  font-family: "Cascadia Code", monospace;
+}
+
+@media (max-width: 1080px) {
+  .app-shell,
+  .page-grid,
+  .page-split,
+  .summary-grid,
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar__meta {
+    grid-auto-flow: row;
+    justify-items: start;
+  }
+}
