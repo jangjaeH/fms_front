@@ -14,6 +14,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000
 const fallbackMap = new Map<string, unknown>([
   ["/dashboard/summary", summaryFallback],
   ["/robots", robotsFallback],
+  ["/robots/R-01", robotsFallback[0]],
   ["/map", mapFallback],
   ["/tasks", tasksFallback],
   ["/missions", missionsFallback],
@@ -23,18 +24,43 @@ const fallbackMap = new Map<string, unknown>([
   ["/events", eventsFallback]
 ]);
 
-export async function fetchJson<T>(path: string): Promise<T> {
+async function requestJson<T>(path: string, init?: RequestInit, useFallback = true): Promise<T> {
   try {
-    const response = await fetch(`${API_BASE_URL}${path}`);
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {})
+      },
+      ...init
+    });
     if (!response.ok) {
-      throw new Error(`Failed to fetch ${path}`);
+      const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+      throw new Error(payload?.message ?? `Failed to fetch ${path}`);
     }
     return (await response.json()) as T;
   } catch (error) {
-    const fallback = fallbackMap.get(path);
-    if (fallback) {
-      return fallback as T;
+    if (!init && useFallback) {
+      const fallback = fallbackMap.get(path);
+      if (fallback) {
+        return fallback as T;
+      }
     }
     throw error;
   }
+}
+
+export async function fetchJson<T>(path: string): Promise<T> {
+  return requestJson<T>(path);
+}
+
+export async function postJson<TResponse, TBody>(path: string, body: TBody): Promise<TResponse> {
+  return requestJson<TResponse>(path, { method: "POST", body: JSON.stringify(body) }, false);
+}
+
+export async function patchJson<TResponse, TBody>(path: string, body: TBody): Promise<TResponse> {
+  return requestJson<TResponse>(path, { method: "PATCH", body: JSON.stringify(body) }, false);
+}
+
+export async function deleteJson<TResponse>(path: string): Promise<TResponse> {
+  return requestJson<TResponse>(path, { method: "DELETE" }, false);
 }

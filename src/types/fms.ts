@@ -1,3 +1,7 @@
+export type TaskType = "MOVE" | "PICK" | "DROP" | "GO_CHARGE";
+export type TaskStatus = "QUEUED" | "ASSIGNED" | "RUNNING" | "COMPLETED" | "CANCELED";
+export type OverrideAction = "PAUSE" | "RESUME" | "CANCEL" | "REASSIGN";
+
 export interface Summary {
   activeRobots: number;
   pendingTasks: number;
@@ -20,9 +24,9 @@ export interface Robot {
 
 export interface Task {
   id: string;
-  type: string;
+  type: TaskType;
   priority: number;
-  status: string;
+  status: TaskStatus;
   source: string;
   target: string;
   memo?: string;
@@ -33,7 +37,7 @@ export interface Mission {
   id: string;
   robotId: string;
   taskId: string;
-  state: string;
+  state: "QUEUED" | "RUNNING" | "PAUSED" | "COMPLETED";
   currentStep: string;
   progress: number;
   needsManualOverride: boolean;
@@ -41,13 +45,15 @@ export interface Mission {
 
 export interface Alarm {
   id: string;
-  severity: string;
+  severity: "CRITICAL" | "MAJOR" | "MINOR";
   title: string;
   source: string;
-  status: string;
+  status: "OPEN" | "ACKED" | "RESOLVED";
   missionId?: string;
   robotId?: string;
   createdAt: string;
+  acknowledgedBy?: string;
+  resolvedBy?: string;
 }
 
 export interface EventItem {
@@ -71,4 +77,19 @@ export interface MapData {
   height: number;
   stations: Array<{ id: string; label: string; x: number; y: number; type: string }>;
   blockedCells: string[];
+}
+
+export interface CreateTaskInput {
+  type: TaskType;
+  priority: number;
+  source: string;
+  target?: string;
+  memo?: string;
+}
+
+export interface OverrideInput {
+  operator: string;
+  action: OverrideAction;
+  reason: string;
+  targetRobotId?: string;
 }

@@ -24,6 +24,12 @@ a {
   text-decoration: none;
 }
 
+button,
+input,
+select {
+  font: inherit;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -69,7 +75,11 @@ a {
 .page-split,
 .robot-grid,
 .mission-board,
-.stack-list {
+.stack-list,
+.toolbar,
+.toolbar__actions,
+.form-grid,
+.card-actions {
   display: grid;
   gap: 16px;
 }
@@ -159,6 +169,87 @@ a {
   justify-content: space-between;
 }
 
+.data-card--selected {
+  outline: 2px solid rgba(83, 171, 255, 0.8);
+}
+
+.toolbar {
+  grid-template-columns: repeat(2, minmax(0, 220px)) 1fr;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.toolbar__actions {
+  grid-auto-flow: column;
+  justify-content: end;
+  align-items: center;
+}
+
+.form-card {
+  margin-bottom: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(9, 19, 32, 0.85);
+  color: #f3f8ff;
+}
+
+.card-actions {
+  align-items: start;
+  margin-top: 12px;
+}
+
+.action-button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-button--primary {
+  background: #4f8cff;
+  color: white;
+}
+
+.action-button--neutral {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.action-button--danger {
+  background: #b94a48;
+  color: white;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -226,6 +317,11 @@ a {
   padding-left: 18px;
 }
 
+.error-text {
+  margin: 8px 0;
+  color: #ffb3b3;
+}
+
 .state-message {
   padding: 24px;
   border-radius: 18px;
@@ -241,12 +337,16 @@ code {
   .page-grid,
   .page-split,
   .summary-grid,
-  .topbar {
+  .topbar,
+  .toolbar,
+  .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .topbar__meta {
+  .topbar__meta,
+  .toolbar__actions {
     grid-auto-flow: row;
     justify-items: start;
+    justify-content: start;
   }
 }
