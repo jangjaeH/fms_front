@@ -30,3 +30,4 @@ docker compose up --build
 - Frontend: `http://localhost:5175`
 - Backend API: `http://localhost:4000`
 - Task 화면에서 `Create Mission`으로 작업을 넣으면 백엔드가 가용 로봇을 배정하고 Mission Board / Map에 반영합니다.
+- Map 화면의 `Auto Task Generator` 패널에서 idle 로봇용 자동 Task 생성을 켜고 끄거나 즉시 생성할 수 있습니다.

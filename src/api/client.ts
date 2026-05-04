@@ -1,5 +1,6 @@
 import {
   alarmsFallback,
+  autoTaskStatusFallback,
   equipmentFallback,
   eventsFallback,
   mapFallback,
@@ -18,6 +19,7 @@ const fallbackMap = new Map<string, unknown>([
   ["/robots/R-01/events", eventsFallback.filter((event) => event.source === "R-01" || event.payload.robotId === "R-01")],
   ["/robots/R-02/events", eventsFallback.filter((event) => event.source === "R-02" || event.payload.robotId === "R-02")],
   ["/robots/R-03/events", eventsFallback.filter((event) => event.source === "R-03" || event.payload.robotId === "R-03")],
+  ["/simulation/auto-tasks", autoTaskStatusFallback],
   ["/map", mapFallback],
   ["/tasks", tasksFallback],
   ["/missions", missionsFallback],

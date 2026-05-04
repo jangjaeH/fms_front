@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { fetchJson, postJson } from "../api/client";
+import { fetchJson, patchJson, postJson } from "../api/client";
 import { ActionButton } from "../components/ActionButton";
 import { Panel } from "../components/Panel";
 import { StatusBadge } from "../components/StatusBadge";
 import { usePersistentState } from "../hooks/usePersistentState";
-import type { EventItem, MapData, Mission, OverrideInput, Robot } from "../types/fms";
+import type { AutoTaskStatus, EventItem, MapData, Mission, OverrideInput, Robot } from "../types/fms";
 
 type Station = MapData["stations"][number];
 type Obstacle = MapData["obstacles"][number];
@@ -163,6 +163,11 @@ export function MapPage() {
   const map = useQuery({ queryKey: ["map"], queryFn: () => fetchJson<MapData>("/map"), refetchInterval: 3000 });
   const robots = useQuery({ queryKey: ["robots"], queryFn: () => fetchJson<Robot[]>("/robots"), refetchInterval: 1000 });
   const missions = useQuery({ queryKey: ["missions"], queryFn: () => fetchJson<Mission[]>("/missions") });
+  const autoTasks = useQuery({
+    queryKey: ["auto-tasks"],
+    queryFn: () => fetchJson<AutoTaskStatus>("/simulation/auto-tasks"),
+    refetchInterval: 2000
+  });
   const [selectedRobotId, setSelectedRobotId] = usePersistentState("map.selectedRobotId", "");
   const [showTrafficLayer, setShowTrafficLayer] = useState(true);
   const [showStations, setShowStations] = useState(true);
@@ -187,6 +192,23 @@ export function MapPage() {
       await queryClient.invalidateQueries({ queryKey: ["missions"] });
       await queryClient.invalidateQueries({ queryKey: ["events"] });
       await queryClient.invalidateQueries({ queryKey: ["robot-events", selectedRobotId] });
+    }
+  });
+  const autoTaskToggleMutation = useMutation({
+    mutationFn: (enabled: boolean) => patchJson<AutoTaskStatus, { enabled: boolean }>("/simulation/auto-tasks", { enabled }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["auto-tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
+    }
+  });
+  const autoTaskRunMutation = useMutation({
+    mutationFn: () => postJson<AutoTaskStatus, Record<string, never>>("/simulation/auto-tasks/run", {}),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["auto-tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["missions"] });
+      await queryClient.invalidateQueries({ queryKey: ["robots"] });
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
     }
   });
 
@@ -366,6 +388,37 @@ export function MapPage() {
                 <span>Reserved {robot.reservedCells.join(", ") || "-"}</span>
               </button>
             ))}
+          </div>
+        </Panel>
+        <Panel title="Auto Task Generator" subtitle="Idle 로봇에 작업을 자동 투입">
+          <div className="drawer-stack">
+            <div className="detail-grid">
+              <span>Status</span>
+              <strong>{autoTasks.data?.enabled ? "RUNNING" : "STOPPED"}</strong>
+              <span>Generated</span>
+              <strong>{autoTasks.data?.generatedCount ?? 0}</strong>
+              <span>Idle Robots</span>
+              <strong>{autoTasks.data?.idleRobots ?? 0}</strong>
+              <span>Last Mission</span>
+              <strong>{autoTasks.data?.lastMissionId ?? "-"}</strong>
+            </div>
+            <div className="drawer-actions">
+              <ActionButton
+                tone={autoTasks.data?.enabled ? "danger" : "primary"}
+                disabled={autoTaskToggleMutation.isPending}
+                onClick={() => autoTaskToggleMutation.mutate(!(autoTasks.data?.enabled ?? true))}
+              >
+                {autoTasks.data?.enabled ? "Stop Auto" : "Start Auto"}
+              </ActionButton>
+              <ActionButton tone="neutral" disabled={autoTaskRunMutation.isPending} onClick={() => autoTaskRunMutation.mutate()}>
+                Generate Now
+              </ActionButton>
+            </div>
+            <p className="state-message state-message--compact">
+              {autoTasks.data?.lastGeneratedAt
+                ? `마지막 자동 생성: ${new Date(autoTasks.data.lastGeneratedAt).toLocaleTimeString("ko-KR")}`
+                : "가용 로봇이 생기면 자동으로 Task를 만들어 Mission에 배정합니다."}
+            </p>
           </div>
         </Panel>
         <Panel title="Robot Detail Drawer" subtitle="선택 로봇 상태 / 최근 이벤트 / Quick Action">

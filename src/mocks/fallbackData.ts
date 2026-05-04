@@ -1,10 +1,22 @@
-import type { Alarm, Equipment, EventItem, MapData, Mission, Robot, Summary, Task } from "../types/fms";
+import type { Alarm, AutoTaskStatus, Equipment, EventItem, MapData, Mission, Robot, Summary, Task } from "../types/fms";
 
 export const summaryFallback: Summary = {
   activeRobots: 3,
   pendingTasks: 3,
   activeMissions: 2,
   activeAlarms: 2
+};
+
+export const autoTaskStatusFallback: AutoTaskStatus = {
+  enabled: true,
+  intervalMs: 7000,
+  generatedCount: 0,
+  lastGeneratedAt: null,
+  lastTaskId: null,
+  lastMissionId: null,
+  idleRobots: 1,
+  queuedTasks: 1,
+  activeMissions: 2
 };
 
 export const robotsFallback: Robot[] = [
@@ -88,6 +100,15 @@ export const tasksFallback: Task[] = [
     target: "ST-08",
     missionId: "M-1002",
     createdAt: "2026-04-29T08:12:00.000Z"
+  },
+  {
+    id: "T-1003",
+    type: "GO_CHARGE",
+    priority: 3,
+    status: "COMPLETED",
+    source: "R-02",
+    target: "CH-01",
+    createdAt: "2026-04-29T08:20:00.000Z"
   }
 ];
 
