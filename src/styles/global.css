@@ -127,6 +127,18 @@ select {
   font-size: 32px;
 }
 
+.summary-card--link {
+  display: block;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.summary-card--link:hover {
+  border-color: rgba(92, 214, 176, 0.56);
+  transform: translateY(-1px);
+}
+
 .page-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -163,6 +175,17 @@ select {
   padding: 16px;
 }
 
+.data-card--button {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.data-card--button:hover {
+  border-color: rgba(83, 171, 255, 0.55);
+}
+
 .data-card--row {
   display: flex;
   align-items: center;
@@ -174,9 +197,13 @@ select {
 }
 
 .toolbar {
-  grid-template-columns: repeat(2, minmax(0, 220px)) 1fr;
+  grid-template-columns: repeat(3, minmax(0, 220px)) 1fr;
   align-items: end;
   margin-bottom: 16px;
+}
+
+.toolbar--compact {
+  grid-template-columns: repeat(3, minmax(0, 220px)) 1fr;
 }
 
 .toolbar__actions {
@@ -262,6 +289,11 @@ select {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.data-table tbody tr:hover,
+.row-selected {
+  background: rgba(92, 214, 176, 0.08);
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -273,9 +305,17 @@ select {
 
 .status-badge--connected,
 .status-badge--running,
+.status-badge--moving,
+.status-badge--charging,
 .status-badge--ready {
   background: rgba(0, 191, 120, 0.16);
   color: #8ff1c1;
+}
+
+.status-badge--idle,
+.status-badge--minor {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.76);
 }
 
 .status-badge--warning,
@@ -301,15 +341,500 @@ select {
 .map-cell {
   min-height: 72px;
   padding: 8px;
+  border: 1px solid transparent;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
+  color: inherit;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  text-align: left;
 }
 
 .map-cell--blocked {
   background: rgba(255, 87, 87, 0.14);
+}
+
+.map-cell--reserved {
+  background: rgba(255, 181, 46, 0.14);
+}
+
+.map-cell--robot {
+  border-color: rgba(83, 171, 255, 0.55);
+}
+
+.map-cell--selected {
+  outline: 2px solid rgba(92, 214, 176, 0.9);
+}
+
+.map-cell small {
+  color: #ffd58d;
+}
+
+.facility-map-shell {
+  width: 100%;
+  aspect-ratio: 18 / 11;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: #08111d;
+}
+
+.facility-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.facility-floor {
+  fill: #151b21;
+}
+
+.facility-floor-texture {
+  opacity: 0.64;
+}
+
+.facility-boundary {
+  fill: none;
+  stroke: rgba(221, 230, 238, 0.5);
+  stroke-width: 7;
+}
+
+.facility-yard {
+  fill: rgba(87, 94, 101, 0.34);
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 2;
+}
+
+.yard-label {
+  fill: rgba(255, 255, 255, 0.48);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.facility-zone {
+  stroke-width: 2;
+}
+
+.facility-zone--work {
+  fill: rgba(57, 128, 255, 0.06);
+  stroke: rgba(93, 162, 255, 0.22);
+}
+
+.facility-zone--storage {
+  fill: rgba(104, 122, 142, 0.18);
+  stroke: rgba(177, 190, 205, 0.3);
+}
+
+.facility-zone--service {
+  fill: rgba(92, 214, 176, 0.07);
+  stroke: rgba(92, 214, 176, 0.24);
+}
+
+.facility-zone--dock {
+  fill: rgba(80, 94, 110, 0.22);
+  stroke: rgba(191, 207, 221, 0.28);
+}
+
+.facility-zone--production {
+  fill: rgba(54, 113, 165, 0.12);
+  stroke: rgba(111, 174, 218, 0.3);
+}
+
+.facility-zone--qc {
+  fill: rgba(177, 132, 55, 0.12);
+  stroke: rgba(242, 189, 97, 0.32);
+}
+
+.facility-zone--office {
+  fill: rgba(61, 76, 91, 0.26);
+  stroke: rgba(210, 222, 233, 0.24);
+}
+
+.facility-zone-label,
+.map-scale-label {
+  fill: rgba(246, 250, 255, 0.56);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.map-scale-label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.facility-lane {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.facility-lane--base {
+  stroke: rgba(58, 65, 72, 0.94);
+}
+
+.facility-lane--center {
+  stroke: rgba(247, 201, 91, 0.58);
+  stroke-width: 5;
+  stroke-dasharray: 24 18;
+}
+
+.facility-lane-label {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: rgba(10, 14, 18, 0.85);
+  stroke-width: 4px;
+}
+
+.robot-route {
+  fill: none;
+  stroke: rgba(91, 203, 255, 0.72);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 22 13;
+}
+
+.robot-route--selected {
+  stroke: rgba(92, 214, 176, 0.9);
+  stroke-width: 11;
+}
+
+.station rect {
+  stroke-width: 2;
+}
+
+.station text,
+.obstacle text,
+.robot-marker text {
+  fill: #f3f8ff;
+  font-size: 18px;
+  font-weight: 800;
+  text-anchor: start;
+  pointer-events: none;
+}
+
+.station .station-label {
+  fill: rgba(255, 255, 255, 0.68);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.station rect {
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.22));
+}
+
+.station--pick rect {
+  fill: rgba(92, 214, 176, 0.26);
+  stroke: rgba(92, 214, 176, 0.8);
+}
+
+.station--dock rect {
+  fill: rgba(96, 105, 116, 0.72);
+  stroke: rgba(230, 239, 247, 0.55);
+}
+
+.station--drop rect {
+  fill: rgba(79, 140, 255, 0.24);
+  stroke: rgba(108, 164, 255, 0.82);
+}
+
+.station--supply rect {
+  fill: rgba(92, 214, 176, 0.22);
+  stroke: rgba(92, 214, 176, 0.74);
+}
+
+.station--charger rect {
+  fill: rgba(255, 181, 46, 0.22);
+  stroke: rgba(255, 204, 118, 0.82);
+}
+
+.station--buffer rect {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.3);
+}
+
+.station--assembly rect {
+  fill: rgba(42, 95, 143, 0.6);
+  stroke: rgba(117, 188, 244, 0.7);
+}
+
+.station--primary rect {
+  fill: rgba(42, 95, 143, 0.62);
+  stroke: rgba(117, 188, 244, 0.74);
+}
+
+.station--secondary rect {
+  fill: rgba(56, 115, 102, 0.58);
+  stroke: rgba(121, 217, 190, 0.72);
+}
+
+.station--inverter rect {
+  fill: rgba(127, 105, 168, 0.54);
+  stroke: rgba(185, 164, 238, 0.72);
+}
+
+.station--qc rect {
+  fill: rgba(177, 132, 55, 0.5);
+  stroke: rgba(255, 205, 115, 0.78);
+}
+
+.station-detail {
+  pointer-events: none;
+}
+
+.station-detail--dock-apron {
+  fill: rgba(20, 24, 28, 0.46);
+}
+
+.station-detail--dock-line,
+.station-detail--rack-slot,
+.obstacle-detail--rack-slot,
+.obstacle-detail--roller,
+.obstacle-detail--door-slat {
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 3;
+}
+
+.station-detail--machine {
+  fill: rgba(12, 21, 29, 0.44);
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.station-detail--signal {
+  fill: #5cd6b0;
+}
+
+.station-detail--table,
+.station-detail--buffer-slot {
+  fill: rgba(10, 15, 20, 0.42);
+  stroke: rgba(255, 255, 255, 0.22);
+}
+
+.station-detail--check {
+  fill: none;
+  stroke: rgba(126, 242, 173, 0.86);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.station-detail--turntable {
+  fill: rgba(10, 15, 20, 0.38);
+  stroke: rgba(235, 222, 255, 0.42);
+  stroke-width: 5;
+}
+
+.station-detail--rotate-arrow {
+  fill: none;
+  stroke: rgba(235, 222, 255, 0.78);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.station-detail--charger-pad {
+  fill: rgba(26, 21, 6, 0.45);
+  stroke: rgba(255, 214, 104, 0.35);
+}
+
+.station-detail--bolt {
+  fill: rgba(255, 226, 123, 0.8);
+}
+
+.obstacle rect {
+  fill: rgba(88, 94, 102, 0.4);
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 2;
+}
+
+.obstacle--rack rect {
+  fill: rgba(67, 77, 88, 0.9);
+  stroke: rgba(191, 202, 214, 0.45);
+}
+
+.obstacle--column rect {
+  fill: rgba(120, 112, 98, 0.86);
+  stroke: rgba(238, 223, 194, 0.72);
+}
+
+.obstacle--fence rect {
+  fill: none;
+  stroke: rgba(255, 207, 96, 0.72);
+  stroke-width: 5;
+  stroke-dasharray: 18 12;
+}
+
+.obstacle--wall rect {
+  fill: rgba(31, 38, 45, 0.96);
+  stroke: rgba(229, 235, 241, 0.34);
+}
+
+.obstacle--conveyor rect {
+  fill: rgba(34, 46, 55, 0.94);
+  stroke: rgba(141, 162, 176, 0.7);
+}
+
+.obstacle--dock_door rect {
+  fill: rgba(32, 39, 46, 0.94);
+  stroke: rgba(230, 239, 247, 0.62);
+}
+
+.obstacle--machine rect {
+  fill: rgba(66, 75, 82, 0.9);
+  stroke: rgba(199, 210, 218, 0.48);
+}
+
+.obstacle-detail {
+  pointer-events: none;
+}
+
+.robot-marker {
+  cursor: pointer;
+}
+
+.robot-marker__halo {
+  fill: rgba(92, 214, 176, 0.12);
+  stroke: rgba(92, 214, 176, 0.32);
+  stroke-width: 2;
+}
+
+.robot-marker--selected .robot-marker__halo {
+  fill: rgba(92, 214, 176, 0.28);
+  stroke: rgba(92, 214, 176, 0.95);
+  stroke-width: 4;
+}
+
+.robot-marker__body {
+  stroke: rgba(255, 255, 255, 0.86);
+  stroke-width: 3;
+}
+
+.robot-marker__body--moving {
+  fill: #3d8bff;
+}
+
+.robot-marker__body--charging {
+  fill: #5cd6b0;
+}
+
+.robot-marker__body--waiting_path {
+  fill: #ffb52e;
+}
+
+.robot-marker__body--idle {
+  fill: #95a3b8;
+}
+
+.robot-marker__body--error {
+  fill: #ff5757;
+}
+
+.robot-marker__nose {
+  fill: #f3f8ff;
+}
+
+.check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.drawer-stack,
+.drawer-actions,
+.event-mini-list {
+  display: grid;
+  gap: 12px;
+}
+
+.drawer-actions {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.4fr) minmax(0, 1fr);
+  gap: 8px 14px;
+}
+
+.detail-grid span {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.event-mini-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mini-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mini-kpi-grid article {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mini-kpi-grid span {
+  display: block;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+}
+
+.mini-kpi-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 24px;
+}
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.kanban-column {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 280px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.kanban-column h3 {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-column {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.payload-block {
+  max-height: 360px;
+  overflow: auto;
+  margin: 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(2, 8, 16, 0.72);
+  color: #c9f7e5;
 }
 
 .spec-list {
@@ -328,6 +853,11 @@ select {
   background: rgba(13, 24, 39, 0.72);
 }
 
+.state-message--compact {
+  padding: 12px;
+  border-radius: 12px;
+}
+
 code {
   font-family: "Cascadia Code", monospace;
 }
@@ -337,6 +867,8 @@ code {
   .page-grid,
   .page-split,
   .summary-grid,
+  .mini-kpi-grid,
+  .kanban-board,
   .topbar,
   .toolbar,
   .form-grid {

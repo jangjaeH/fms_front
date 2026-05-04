@@ -1,6 +1,12 @@
 export type TaskType = "MOVE" | "PICK" | "DROP" | "GO_CHARGE";
 export type TaskStatus = "QUEUED" | "ASSIGNED" | "RUNNING" | "COMPLETED" | "CANCELED";
 export type OverrideAction = "PAUSE" | "RESUME" | "CANCEL" | "REASSIGN";
+export type AlarmStatus = "OPEN" | "ACKED" | "RESOLVED";
+
+export interface Coordinate {
+  x: number;
+  y: number;
+}
 
 export interface Summary {
   activeRobots: number;
@@ -12,7 +18,7 @@ export interface Summary {
 export interface Robot {
   id: string;
   name: string;
-  state: "IDLE" | "MOVING" | "WAITING_PATH" | "ERROR";
+  state: "IDLE" | "MOVING" | "WAITING_PATH" | "CHARGING" | "ERROR";
   battery: number;
   currentCell: string;
   targetCell: string | null;
@@ -20,6 +26,10 @@ export interface Robot {
   missionId: string | null;
   x: number;
   y: number;
+  heading: number;
+  radius: number;
+  route: Coordinate[];
+  routeIndex: number;
 }
 
 export interface Task {
@@ -29,6 +39,7 @@ export interface Task {
   status: TaskStatus;
   source: string;
   target: string;
+  missionId?: string;
   memo?: string;
   createdAt: string;
 }
@@ -48,7 +59,7 @@ export interface Alarm {
   severity: "CRITICAL" | "MAJOR" | "MINOR";
   title: string;
   source: string;
-  status: "OPEN" | "ACKED" | "RESOLVED";
+  status: AlarmStatus;
   missionId?: string;
   robotId?: string;
   createdAt: string;
@@ -75,7 +86,10 @@ export interface Equipment {
 export interface MapData {
   width: number;
   height: number;
-  stations: Array<{ id: string; label: string; x: number; y: number; type: string }>;
+  stations: Array<{ id: string; label: string; x: number; y: number; width: number; height: number; type: string }>;
+  zones: Array<{ id: string; label: string; x: number; y: number; width: number; height: number; type: string }>;
+  obstacles: Array<{ id: string; label: string; x: number; y: number; width: number; height: number; type: string }>;
+  lanes: Array<{ id: string; label: string; width: number; points: Coordinate[] }>;
   blockedCells: string[];
 }
 
@@ -92,4 +106,16 @@ export interface OverrideInput {
   action: OverrideAction;
   reason: string;
   targetRobotId?: string;
+}
+
+export interface AutoTaskStatus {
+  enabled: boolean;
+  intervalMs: number;
+  generatedCount: number;
+  lastGeneratedAt: string | null;
+  lastTaskId: string | null;
+  lastMissionId: string | null;
+  idleRobots: number;
+  queuedTasks: number;
+  activeMissions: number;
 }
