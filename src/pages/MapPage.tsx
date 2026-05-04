@@ -9,6 +9,154 @@ import { StatusBadge } from "../components/StatusBadge";
 import { usePersistentState } from "../hooks/usePersistentState";
 import type { EventItem, MapData, Mission, OverrideInput, Robot } from "../types/fms";
 
+type Station = MapData["stations"][number];
+type Obstacle = MapData["obstacles"][number];
+
+function polylinePoints(points: MapData["lanes"][number]["points"]) {
+  return points.map((point) => `${point.x},${point.y}`).join(" ");
+}
+
+function renderStationInterior(station: Station) {
+  const width = station.width ?? 110;
+  const height = station.height ?? 80;
+  const type = station.type.toLowerCase();
+
+  if (type === "dock") {
+    return (
+      <>
+        <rect className="station-detail station-detail--dock-apron" x={station.x + 10} y={station.y + height - 18} width={width - 20} height="10" rx="2" />
+        {[0, 1, 2, 3].map((index) => (
+          <line
+            key={index}
+            className="station-detail station-detail--dock-line"
+            x1={station.x + 22 + index * 28}
+            y1={station.y + 8}
+            x2={station.x + 22 + index * 28}
+            y2={station.y + height - 24}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === "assembly") {
+    return (
+      <>
+        <rect className="station-detail station-detail--machine" x={station.x + 16} y={station.y + 34} width={width - 32} height={height - 48} rx="6" />
+        <circle className="station-detail station-detail--signal" cx={station.x + width - 22} cy={station.y + 18} r="7" />
+      </>
+    );
+  }
+
+  if (type === "qc") {
+    return (
+      <>
+        <rect className="station-detail station-detail--table" x={station.x + 18} y={station.y + 34} width={width - 36} height="18" rx="4" />
+        <path className="station-detail station-detail--check" d={`M ${station.x + 24} ${station.y + 66} l 12 12 l 26 -30`} />
+      </>
+    );
+  }
+
+  if (type === "charger") {
+    return (
+      <>
+        <rect className="station-detail station-detail--charger-pad" x={station.x + 22} y={station.y + 38} width={width - 44} height={height - 52} rx="8" />
+        <path className="station-detail station-detail--bolt" d={`M ${station.x + width / 2 + 4} ${station.y + 18} l -24 34 h 20 l -14 30 l 34 -42 h -20 z`} />
+      </>
+    );
+  }
+
+  if (type === "buffer") {
+    return (
+      <>
+        {[0, 1, 2].map((index) => (
+          <rect
+            key={index}
+            className="station-detail station-detail--buffer-slot"
+            x={station.x + 16 + index * 34}
+            y={station.y + 38}
+            width="24"
+            height={height - 52}
+            rx="4"
+          />
+        ))}
+      </>
+    );
+  }
+
+  return null;
+}
+
+function renderObstacleInterior(obstacle: Obstacle) {
+  const type = obstacle.type.toLowerCase();
+
+  if (type === "rack") {
+    return (
+      <>
+        {[0, 1, 2, 3, 4].map((index) => (
+          <line
+            key={index}
+            className="obstacle-detail obstacle-detail--rack-slot"
+            x1={obstacle.x + 6}
+            y1={obstacle.y + 36 + index * 48}
+            x2={obstacle.x + obstacle.width - 6}
+            y2={obstacle.y + 36 + index * 48}
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === "conveyor") {
+    const vertical = obstacle.height > obstacle.width;
+    const count = vertical ? Math.floor(obstacle.height / 26) : Math.floor(obstacle.width / 26);
+    return (
+      <>
+        {Array.from({ length: count }).map((_, index) =>
+          vertical ? (
+            <line
+              key={index}
+              className="obstacle-detail obstacle-detail--roller"
+              x1={obstacle.x + 6}
+              y1={obstacle.y + 18 + index * 26}
+              x2={obstacle.x + obstacle.width - 6}
+              y2={obstacle.y + 18 + index * 26}
+            />
+          ) : (
+            <line
+              key={index}
+              className="obstacle-detail obstacle-detail--roller"
+              x1={obstacle.x + 18 + index * 26}
+              y1={obstacle.y + 6}
+              x2={obstacle.x + 18 + index * 26}
+              y2={obstacle.y + obstacle.height - 6}
+            />
+          )
+        )}
+      </>
+    );
+  }
+
+  if (type === "dock_door") {
+    return (
+      <>
+        {[0, 1, 2].map((index) => (
+          <line
+            key={index}
+            className="obstacle-detail obstacle-detail--door-slat"
+            x1={obstacle.x + 4}
+            y1={obstacle.y + 14 + index * 16}
+            x2={obstacle.x + obstacle.width - 4}
+            y2={obstacle.y + 14 + index * 16}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return null;
+}
+
 export function MapPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -76,7 +224,7 @@ export function MapPage() {
 
   return (
     <div className="page-split">
-      <Panel title="Fleet Map" subtitle="16:9 우선 레이아웃">
+      <Panel title="Facility Digital Twin" subtitle="1000x1000 설비 좌표 / 도크-랙-공정-출하 흐름">
         <div className="toolbar toolbar--compact">
           <label className="check-row">
             <input type="checkbox" checked={showTrafficLayer} onChange={(event) => setShowTrafficLayer(event.target.checked)} />
@@ -97,13 +245,22 @@ export function MapPage() {
               <pattern id="facilityGrid" width="50" height="50" patternUnits="userSpaceOnUse">
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.045)" strokeWidth="1" />
               </pattern>
+              <pattern id="floorNoise" width="24" height="24" patternUnits="userSpaceOnUse">
+                <rect width="24" height="24" fill="#222a30" />
+                <path d="M 4 7 H 18 M 8 18 H 22" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+              </pattern>
               <filter id="robotShadow" x="-40%" y="-40%" width="180%" height="180%">
                 <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#000000" floodOpacity="0.35" />
               </filter>
             </defs>
             <rect className="facility-floor" x="0" y="0" width={map.data.width} height={map.data.height} />
+            <rect className="facility-floor-texture" x="36" y="36" width={map.data.width - 72} height={map.data.height - 72} fill="url(#floorNoise)" />
             <rect x="0" y="0" width={map.data.width} height={map.data.height} fill="url(#facilityGrid)" />
             <rect className="facility-boundary" x="28" y="28" width={map.data.width - 56} height={map.data.height - 56} />
+            <rect className="facility-yard" x="28" y="940" width={map.data.width - 56} height="32" />
+            <text className="yard-label" x="42" y="963">
+              TRUCK APRON
+            </text>
 
             {zones.map((zone) => (
               <g key={zone.id}>
@@ -118,13 +275,16 @@ export function MapPage() {
               <g key={lane.id}>
                 <polyline
                   className="facility-lane facility-lane--base"
-                  points={lane.points.map((point) => `${point.x},${point.y}`).join(" ")}
+                  points={polylinePoints(lane.points)}
                   strokeWidth={lane.width}
                 />
                 <polyline
                   className="facility-lane facility-lane--center"
-                  points={lane.points.map((point) => `${point.x},${point.y}`).join(" ")}
+                  points={polylinePoints(lane.points)}
                 />
+                <text className="facility-lane-label" x={lane.points[0]?.x ?? 0} y={(lane.points[0]?.y ?? 0) - 18}>
+                  {lane.label}
+                </text>
               </g>
             ))}
 
@@ -144,6 +304,7 @@ export function MapPage() {
               ? stations.map((station) => (
                   <g key={station.id} className={`station station--${station.type.toLowerCase()}`}>
                     <rect x={station.x} y={station.y} width={station.width ?? 110} height={station.height ?? 80} rx="10" />
+                    {renderStationInterior(station)}
                     <text x={station.x + 12} y={station.y + 26}>{station.id}</text>
                     <text className="station-label" x={station.x + 12} y={station.y + 48}>{station.label}</text>
                   </g>
@@ -154,7 +315,10 @@ export function MapPage() {
               ? obstacles.map((obstacle) => (
                   <g key={obstacle.id} className={`obstacle obstacle--${obstacle.type.toLowerCase()}`}>
                     <rect x={obstacle.x} y={obstacle.y} width={obstacle.width} height={obstacle.height} rx="8" />
-                    <text x={obstacle.x + 10} y={obstacle.y + 24}>{obstacle.label}</text>
+                    {renderObstacleInterior(obstacle)}
+                    {obstacle.type !== "WALL" && obstacle.type !== "DOCK_DOOR" ? (
+                      <text x={obstacle.x + 10} y={obstacle.y + 24}>{obstacle.label}</text>
+                    ) : null}
                   </g>
                 ))
               : null}
