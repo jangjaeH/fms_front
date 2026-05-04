@@ -306,6 +306,7 @@ select {
 .status-badge--connected,
 .status-badge--running,
 .status-badge--moving,
+.status-badge--charging,
 .status-badge--ready {
   background: rgba(0, 191, 120, 0.16);
   color: #8ff1c1;
@@ -680,6 +681,10 @@ select {
 
 .robot-marker__body--moving {
   fill: #3d8bff;
+}
+
+.robot-marker__body--charging {
+  fill: #5cd6b0;
 }
 
 .robot-marker__body--waiting_path {

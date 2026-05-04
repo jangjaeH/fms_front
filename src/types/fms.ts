@@ -18,7 +18,7 @@ export interface Summary {
 export interface Robot {
   id: string;
   name: string;
-  state: "IDLE" | "MOVING" | "WAITING_PATH" | "ERROR";
+  state: "IDLE" | "MOVING" | "WAITING_PATH" | "CHARGING" | "ERROR";
   battery: number;
   currentCell: string;
   targetCell: string | null;
