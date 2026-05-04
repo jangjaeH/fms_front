@@ -373,8 +373,8 @@ select {
 
 .facility-map-shell {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  min-height: 640px;
+  aspect-ratio: 18 / 11;
+  min-height: 520px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
@@ -542,6 +542,11 @@ select {
   stroke: rgba(108, 164, 255, 0.82);
 }
 
+.station--supply rect {
+  fill: rgba(92, 214, 176, 0.22);
+  stroke: rgba(92, 214, 176, 0.74);
+}
+
 .station--charger rect {
   fill: rgba(255, 181, 46, 0.22);
   stroke: rgba(255, 204, 118, 0.82);
@@ -555,6 +560,21 @@ select {
 .station--assembly rect {
   fill: rgba(42, 95, 143, 0.6);
   stroke: rgba(117, 188, 244, 0.7);
+}
+
+.station--primary rect {
+  fill: rgba(42, 95, 143, 0.62);
+  stroke: rgba(117, 188, 244, 0.74);
+}
+
+.station--secondary rect {
+  fill: rgba(56, 115, 102, 0.58);
+  stroke: rgba(121, 217, 190, 0.72);
+}
+
+.station--inverter rect {
+  fill: rgba(127, 105, 168, 0.54);
+  stroke: rgba(185, 164, 238, 0.72);
 }
 
 .station--qc rect {
@@ -598,6 +618,20 @@ select {
   fill: none;
   stroke: rgba(126, 242, 173, 0.86);
   stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.station-detail--turntable {
+  fill: rgba(10, 15, 20, 0.38);
+  stroke: rgba(235, 222, 255, 0.42);
+  stroke-width: 5;
+}
+
+.station-detail--rotate-arrow {
+  fill: none;
+  stroke: rgba(235, 222, 255, 0.78);
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }

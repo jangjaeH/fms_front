@@ -81,7 +81,7 @@ export function TasksPage() {
 
   const locationOptions = useMemo(() => {
     const stations = map.data?.stations.map((station) => station.id) ?? [];
-    return Array.from(new Set([...stations, "ST-01", "ST-02", "ST-05", "ST-08"]));
+    return Array.from(new Set(stations));
   }, [map.data]);
 
   const filteredTasks = useMemo(() => {

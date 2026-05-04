@@ -21,7 +21,7 @@ function renderStationInterior(station: Station) {
   const height = station.height ?? 80;
   const type = station.type.toLowerCase();
 
-  if (type === "dock") {
+  if (type === "dock" || type === "supply" || type === "drop") {
     return (
       <>
         <rect className="station-detail station-detail--dock-apron" x={station.x + 10} y={station.y + height - 18} width={width - 20} height="10" rx="2" />
@@ -39,11 +39,23 @@ function renderStationInterior(station: Station) {
     );
   }
 
-  if (type === "assembly") {
+  if (type === "assembly" || type === "primary" || type === "secondary") {
     return (
       <>
         <rect className="station-detail station-detail--machine" x={station.x + 16} y={station.y + 34} width={width - 32} height={height - 48} rx="6" />
         <circle className="station-detail station-detail--signal" cx={station.x + width - 22} cy={station.y + 18} r="7" />
+      </>
+    );
+  }
+
+  if (type === "inverter") {
+    return (
+      <>
+        <circle className="station-detail station-detail--turntable" cx={station.x + width / 2} cy={station.y + height / 2 + 6} r={Math.min(width, height) / 4} />
+        <path
+          className="station-detail station-detail--rotate-arrow"
+          d={`M ${station.x + width / 2 - 22} ${station.y + height / 2 + 6} a 24 24 0 1 1 34 22 l -10 0 l 18 16 l 18 -16 l -10 0`}
+        />
       </>
     );
   }
