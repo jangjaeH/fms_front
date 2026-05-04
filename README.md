@@ -18,3 +18,15 @@ npm run dev
 ```
 
 기본 백엔드 주소는 `http://localhost:4000`입니다.
+
+## Docker
+
+프로젝트 상위 폴더(`/Users/jangjaehyeok/Desktop/Codex`)에서 실행합니다.
+
+```bash
+docker compose up --build
+```
+
+- Frontend: `http://localhost:5175`
+- Backend API: `http://localhost:4000`
+- Task 화면에서 `Create Mission`으로 작업을 넣으면 백엔드가 가용 로봇을 배정하고 Mission Board / Map에 반영합니다.

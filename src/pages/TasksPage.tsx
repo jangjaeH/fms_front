@@ -43,8 +43,13 @@ export function TasksPage() {
 
   const createTaskMutation = useMutation({
     mutationFn: (input: CreateTaskInput) => postJson<Task, CreateTaskInput>("/tasks", input),
-    onSuccess: async () => {
+    onSuccess: async (createdTask) => {
       await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["missions"] });
+      await queryClient.invalidateQueries({ queryKey: ["robots"] });
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.invalidateQueries({ queryKey: ["summary"] });
+      setSelectedTaskId(createdTask.id);
       setShowForm(false);
       setForm({ type: "MOVE", priority: 3, source: "", target: "", memo: "" });
       setFormError(null);
@@ -58,6 +63,10 @@ export function TasksPage() {
     mutationFn: (taskId: string) => deleteJson<Task>(`/tasks/${taskId}`),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["missions"] });
+      await queryClient.invalidateQueries({ queryKey: ["robots"] });
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.invalidateQueries({ queryKey: ["summary"] });
     }
   });
 
@@ -113,7 +122,7 @@ export function TasksPage() {
 
   return (
     <div className="page-grid">
-      <Panel title="Task Queue" subtitle="Search, filter, and create tasks from one screen">
+      <Panel title="Mission Input Queue" subtitle="Create a task and dispatch it into a live mission">
         <div className="toolbar">
           <Field label="Search">
             <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="ID, source, target" />
@@ -140,7 +149,7 @@ export function TasksPage() {
           </Field>
           <div className="toolbar__actions">
             <ActionButton onClick={() => setShowForm((current) => !current)}>
-              {showForm ? "Close Create Form" : "Create Task"}
+              {showForm ? "Close Create Form" : "Create Mission"}
             </ActionButton>
           </div>
         </div>
@@ -206,7 +215,7 @@ export function TasksPage() {
             {formError ? <p className="error-text">{formError}</p> : null}
             <div className="toolbar__actions">
               <ActionButton onClick={submitTask} disabled={createTaskMutation.isPending}>
-                {createTaskMutation.isPending ? "Creating..." : "Submit Task"}
+                {createTaskMutation.isPending ? "Creating..." : "Submit Mission"}
               </ActionButton>
             </div>
           </div>
@@ -220,6 +229,7 @@ export function TasksPage() {
                 <th>Type</th>
                 <th>Source</th>
                 <th>Target</th>
+                <th>Mission</th>
                 <th>Status</th>
                 <th>Priority</th>
                 <th>Action</th>
@@ -232,6 +242,7 @@ export function TasksPage() {
                   <td>{task.type}</td>
                   <td>{task.source}</td>
                   <td>{task.target}</td>
+                  <td>{task.missionId ?? "-"}</td>
                   <td>{task.status}</td>
                   <td>{task.priority}</td>
                   <td>
@@ -262,6 +273,8 @@ export function TasksPage() {
               <strong>{selectedTask.id}</strong>
               <span>Status</span>
               <strong>{selectedTask.status}</strong>
+              <span>Mission</span>
+              <strong>{selectedTask.missionId ?? "배정 대기"}</strong>
               <span>Route</span>
               <strong>
                 {selectedTask.source} → {selectedTask.target}
@@ -301,6 +314,7 @@ export function TasksPage() {
             <ul className="spec-list">
               <li>Source and target cannot be the same.</li>
               <li>GO_CHARGE uses automatic charger target selection on the backend.</li>
+              <li>가용 로봇이 있으면 생성 즉시 Mission ID가 붙고 Map에서 주행 경로가 갱신됩니다.</li>
               <li>Filter and selected task are restored after refresh.</li>
             </ul>
           </div>

@@ -75,6 +75,7 @@ export const tasksFallback: Task[] = [
     status: "ASSIGNED",
     source: "PICK-01",
     target: "DROP-02",
+    missionId: "M-1001",
     createdAt: "2026-04-29T08:10:00.000Z"
   },
   {
@@ -84,6 +85,7 @@ export const tasksFallback: Task[] = [
     status: "RUNNING",
     source: "ST-01",
     target: "ST-08",
+    missionId: "M-1002",
     createdAt: "2026-04-29T08:12:00.000Z"
   }
 ];
