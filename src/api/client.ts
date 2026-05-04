@@ -15,6 +15,9 @@ const fallbackMap = new Map<string, unknown>([
   ["/dashboard/summary", summaryFallback],
   ["/robots", robotsFallback],
   ["/robots/R-01", robotsFallback[0]],
+  ["/robots/R-01/events", eventsFallback.filter((event) => event.source === "R-01" || event.payload.robotId === "R-01")],
+  ["/robots/R-02/events", eventsFallback.filter((event) => event.source === "R-02" || event.payload.robotId === "R-02")],
+  ["/robots/R-03/events", eventsFallback.filter((event) => event.source === "R-03" || event.payload.robotId === "R-03")],
   ["/map", mapFallback],
   ["/tasks", tasksFallback],
   ["/missions", missionsFallback],
@@ -51,6 +54,10 @@ async function requestJson<T>(path: string, init?: RequestInit, useFallback = tr
 
 export async function fetchJson<T>(path: string): Promise<T> {
   return requestJson<T>(path);
+}
+
+export function apiUrl(path: string) {
+  return `${API_BASE_URL}${path}`;
 }
 
 export async function postJson<TResponse, TBody>(path: string, body: TBody): Promise<TResponse> {
