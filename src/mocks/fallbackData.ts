@@ -73,7 +73,7 @@ export const robotsFallback: Robot[] = [
   {
     id: "R-02",
     name: "Atlas-02",
-    state: "WAITING_PATH",
+    state: "MOVING",
     battery: 64,
     currentCell: "LINE-05",
     targetCell: "SEC-05",
@@ -124,7 +124,7 @@ export const tasksFallback: Task[] = [
     id: "T-1002",
     type: "MOVE",
     priority: 4,
-    status: "RUNNING",
+    status: "ASSIGNED",
     source: "INV-05",
     target: "SEC-05",
     missionId: "M-1002",
@@ -147,31 +147,36 @@ export const missionsFallback: Mission[] = [
     robotId: "R-01",
     taskId: "T-1001",
     state: "RUNNING",
-    currentStep: "MOVE_TO_DROP",
+    currentStep: "MOVE_TO_TARGET",
     progress: 72,
-    needsManualOverride: false
+    needsManualOverride: false,
+    sourceWaypointIndex: 0,
+    stepStartedAt: "2026-04-29T08:10:00.000Z"
   },
   {
     id: "M-1002",
     robotId: "R-02",
     taskId: "T-1002",
-    state: "PAUSED",
-    currentStep: "WAIT_FOR_PATH",
+    state: "RUNNING",
+    currentStep: "MOVE_TO_TARGET",
     progress: 45,
-    needsManualOverride: true
+    needsManualOverride: false,
+    sourceWaypointIndex: 0,
+    stepStartedAt: "2026-04-29T08:12:00.000Z"
   }
 ];
 
 export const alarmsFallback: Alarm[] = [
   {
     id: "A-1001",
-    severity: "CRITICAL",
-    title: "Robot wait timeout",
+    severity: "MINOR",
+    title: "Traffic route replanned",
     source: "traffic-controller",
-    status: "OPEN",
+    status: "ACKED",
     missionId: "M-1002",
     robotId: "R-02",
-    createdAt: "2026-04-29T08:25:00.000Z"
+    createdAt: "2026-04-29T08:25:00.000Z",
+    acknowledgedBy: "system"
   },
   {
     id: "A-1003",
